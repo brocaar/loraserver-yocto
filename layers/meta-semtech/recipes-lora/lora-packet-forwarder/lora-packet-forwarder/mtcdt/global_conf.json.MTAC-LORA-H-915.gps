@@ -8,8 +8,8 @@
 			"freq": 902700000,
 			"rssi_offset": -165,
 			"tx_enable": true,
-			"tx_freq_max": 902000000,
-			"tx_freq_min": 928000000,
+			"tx_freq_min": 902000000,
+			"tx_freq_max": 928000000,
 			"type": "SX1257"
 		},
 		"radio_1": {

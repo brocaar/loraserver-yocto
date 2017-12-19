@@ -4,7 +4,7 @@ PRIORITY = "optional"
 LICENSE = "BSD"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=22af7693d7b76ef0fc76161c4be76c45"
 DEPENDS = "lora-gateway"
-PR = "r4"
+PR = "r5"
 
 SRCREV = "v${PV}"
 SRC_URI = "git://github.com/Lora-net/packet_forwarder.git;protocol=git \
