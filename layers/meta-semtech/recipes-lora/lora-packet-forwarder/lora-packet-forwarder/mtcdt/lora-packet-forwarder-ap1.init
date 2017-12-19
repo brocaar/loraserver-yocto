@@ -19,7 +19,6 @@ spidev_ap=/dev/spidev-$ap
 lora_mtac_id="MTAC-LORA"
 
 read_lora_hw_info() {
-    # product-id of first lora card
     lora_id=$(mts-io-sysfs show $ap/product-id 2> /dev/null)
     lora_eui=$(mts-io-sysfs show $ap/eui 2> /dev/null)
     # remove all colons
