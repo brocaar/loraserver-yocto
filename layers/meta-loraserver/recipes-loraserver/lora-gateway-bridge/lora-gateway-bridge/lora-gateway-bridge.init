@@ -4,19 +4,15 @@ DESC="LoRa Gateway Bridge"
 NAME=lora-gateway-bridge
 DAEMON=/opt/$NAME/$NAME
 PID_FILE=/var/run/$NAME.pid
-CONFIG_FILE=/var/config/$NAME/$NAME
+CONFIG_FILE=/var/config/$NAME/$NAME.toml
 
-set -a
-if [ -f "$CONFIG_FILE" ]; then
-	. "$CONFIG_FILE"
-fi
 
 function do_start {
 	start-stop-daemon \
         --start \
         --background \
         --make-pidfile --pidfile "$PID_FILE" \
-        --startas /bin/bash -- -c "exec $DAEMON"
+		--exec $DAEMON -- --config $CONFIG_FILE
 }
 
 function do_stop {
