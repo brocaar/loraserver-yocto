@@ -7,8 +7,8 @@ SRC_URI = "https://dl.loraserver.io/tar/lora-gateway-bridge_${PV}_linux_arm.tar.
            file://lora-gateway-bridge.toml \
            file://lora-gateway-bridge.init \
 "
-SRC_URI[md5sum] = "88be8561b0070d21400d56f13981b274"
-SRC_URI[sha256sum] = "8699b0730bd1aafed43b995cc6194669b70016b530e3da8d8ba4ef2e703d7317"
+SRC_URI[md5sum] = "e57b6ef9c3214eaf1ad71824728f2ab4"
+SRC_URI[sha256sum] = "5dfa376dfae5278f8fab12c80a826fd39e4db98d3eea1997009fbbb5fe288531"
 PR = "r1"
 
 LORA_GATEWAY_BRIDGE_DIR = "/opt/lora-gateway-bridge"
