@@ -1,0 +1,66 @@
+Index: git/basic_pkt_fwd/src/base64.c
+===================================================================
+--- git.orig/basic_pkt_fwd/src/base64.c	2015-03-31 16:00:39.479058735 -0500
++++ git/basic_pkt_fwd/src/base64.c	2015-03-31 16:02:18.529580540 -0500
+@@ -263,7 +263,7 @@
+ 			DEBUG("ERROR: INVALID UNPADDED BASE64 STRING\n");
+ 			return -1;
+ 		case 2: /* 2 chars in last block, must add 2 padding char */
+-			if (max_len > (ret + 2 + 1)) {
++			if (max_len >= (ret + 2 + 1)) {
+ 				out[ret] = code_pad;
+ 				out[ret+1] = code_pad;
+ 				out[ret+2] = 0;
+@@ -273,7 +273,7 @@
+ 				return -1;
+ 			}
+ 		case 3: /* 3 chars in last block, must add 1 padding char */
+-			if (max_len > (ret + 1 + 1)) {
++			if (max_len >= (ret + 1 + 1)) {
+ 				out[ret] = code_pad;
+ 				out[ret+1] = 0;
+ 				return ret+1;
+Index: git/beacon_pkt_fwd/src/base64.c
+===================================================================
+--- git.orig/beacon_pkt_fwd/src/base64.c	2015-03-31 16:00:39.479058735 -0500
++++ git/beacon_pkt_fwd/src/base64.c	2015-03-31 16:03:26.040561508 -0500
+@@ -263,7 +263,7 @@
+ 			DEBUG("ERROR: INVALID UNPADDED BASE64 STRING\n");
+ 			return -1;
+ 		case 2: /* 2 chars in last block, must add 2 padding char */
+-			if (max_len > (ret + 2 + 1)) {
++			if (max_len >= (ret + 2 + 1)) {
+ 				out[ret] = code_pad;
+ 				out[ret+1] = code_pad;
+ 				out[ret+2] = 0;
+@@ -273,7 +273,7 @@
+ 				return -1;
+ 			}
+ 		case 3: /* 3 chars in last block, must add 1 padding char */
+-			if (max_len > (ret + 1 + 1)) {
++			if (max_len >= (ret + 1 + 1)) {
+ 				out[ret] = code_pad;
+ 				out[ret+1] = 0;
+ 				return ret+1;
+Index: git/gps_pkt_fwd/src/base64.c
+===================================================================
+--- git.orig/gps_pkt_fwd/src/base64.c	2015-03-31 16:02:59.344965478 -0500
++++ git/gps_pkt_fwd/src/base64.c	2015-03-31 16:03:13.208755845 -0500
+@@ -263,7 +263,7 @@
+ 			DEBUG("ERROR: INVALID UNPADDED BASE64 STRING\n");
+ 			return -1;
+ 		case 2: /* 2 chars in last block, must add 2 padding char */
+-			if (max_len > (ret + 2 + 1)) {
++			if (max_len >= (ret + 2 + 1)) {
+ 				out[ret] = code_pad;
+ 				out[ret+1] = code_pad;
+ 				out[ret+2] = 0;
+@@ -273,7 +273,7 @@
+ 				return -1;
+ 			}
+ 		case 3: /* 3 chars in last block, must add 1 padding char */
+-			if (max_len > (ret + 1 + 1)) {
++			if (max_len >= (ret + 1 + 1)) {
+ 				out[ret] = code_pad;
+ 				out[ret+1] = 0;
+ 				return ret+1;

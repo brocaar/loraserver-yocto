@@ -1,0 +1,40 @@
+diff --git a/libloragw/inc/loragw_hal.h b/libloragw/inc/loragw_hal.h
+index 1516b65..24c5969 100644
+--- a/libloragw/inc/loragw_hal.h
++++ b/libloragw/inc/loragw_hal.h
+@@ -302,6 +312,11 @@ struct lgw_pkt_tx_s {
+ 
+ /* -------------------------------------------------------------------------- */
+ /* --- PUBLIC FUNCTIONS PROTOTYPES ------------------------------------------ */
++/**
++ * @brief Configure the lora synch word
++ * @param word for synch
++ */
++void lgw_conf_lora_synch_word(uint8_t word);
+ 
+ /**
+ @brief Configure an RF chain (must configure before start)
+diff --git a/libloragw/src/loragw_hal.c b/libloragw/src/loragw_hal.c
+index 5dbdf45..d0fe288 100644
+--- a/libloragw/src/loragw_hal.c
++++ b/libloragw/src/loragw_hal.c
+@@ -827,6 +851,19 @@ void lgw_constant_adjust(void) {
+ /* -------------------------------------------------------------------------- */
+ /* --- PUBLIC FUNCTIONS DEFINITION ------------------------------------------ */
+ 
++void lgw_conf_lora_synch_word(uint8_t word) {
++    uint8_t peak1 = word >> 4;
++    uint8_t peak2 = word & 0x0F;
++
++  	lgw_reg_w(LGW_FRAME_SYNCH_PEAK1_POS, peak1);   /* default 1 */
++    lgw_reg_w(LGW_FRAME_SYNCH_PEAK2_POS, peak2); /* default 2 */
++    lgw_reg_w(LGW_MBWSSF_FRAME_SYNCH_PEAK1_POS, peak1); /* default 1 */
++    lgw_reg_w(LGW_MBWSSF_FRAME_SYNCH_PEAK2_POS, peak2); /* default 2 */
++    lgw_reg_w(LGW_TX_FRAME_SYNCH_PEAK1_POS, peak1); /* default 1 */
++    lgw_reg_w(LGW_TX_FRAME_SYNCH_PEAK2_POS, peak2); /* default 2 */
++}
++
++
+ int lgw_rxrf_setconf(uint8_t rf_chain, struct lgw_conf_rxrf_s conf) {
+ 	
+ 	/* check if the concentrator is running */

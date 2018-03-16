@@ -1,0 +1,321 @@
+Index: git/basic_pkt_fwd/src/basic_pkt_fwd.c
+===================================================================
+--- git.orig/basic_pkt_fwd/src/basic_pkt_fwd.c	2015-04-01 15:14:12.192933389 -0500
++++ git/basic_pkt_fwd/src/basic_pkt_fwd.c	2015-04-01 15:36:38.731731561 -0500
+@@ -42,6 +42,8 @@
+ #include <netdb.h>		/* gai_strerror */
+ 
+ #include <pthread.h>
++#include <getopt.h>
++#include <linux/limits.h>
+ 
+ #include "parson.h"
+ #include "base64.h"
+@@ -472,19 +474,65 @@
+ 	return x;
+ }
+ 
++void usage(char *proc_name) {
++	fprintf(stderr, "Usage: %s [-c config_dir] [-l logfile]\n", proc_name);
++	exit(1);
++}
++
++
++static char *short_options = "c:l:h";
++static struct option long_options[] = {
++    {"config-dir", 1, 0, 'c'},
++    {"logfile", 1, 0, 'l'},
++    {"help", 0, 0, 'h'},
++    {0, 0, 0, 0},
++};
++
+ /* -------------------------------------------------------------------------- */
+ /* --- MAIN FUNCTION -------------------------------------------------------- */
+ 
+-int main(void)
++int main(int argc, char *argv[])
+ {
+ 	struct sigaction sigact; /* SIGQUIT&SIGINT&SIGTERM signal handling */
+ 	int i; /* loop variable and temporary variable for return value */
+ 	
+ 	/* configuration file related */
+-	char *global_cfg_path= "global_conf.json"; /* contain global (typ. network-wide) configuration */
+-	char *local_cfg_path = "local_conf.json"; /* contain node specific configuration, overwrite global parameters for parameters that are defined in both */
+-	char *debug_cfg_path = "debug_conf.json"; /* if present, all other configuration files are ignored */
+-	
++	char *global_cfg_name = "global_conf.json"; /* contain global (typ. network-wide) configuration */
++	char *local_cfg_name = "local_conf.json"; /* contain node specific configuration, overwrite global parameters for parameters that are defined in both */
++	char *debug_cfg_name = "debug_conf.json"; /* if present, all other configuration files are ignored */
++
++	int opt_ind = 0;
++	char cfg_dir[PATH_MAX] = {0};
++	char global_cfg_path[PATH_MAX] = {0};
++	char local_cfg_path[PATH_MAX] = {0};
++	char debug_cfg_path[PATH_MAX] = {0};
++	char *logfile_path = NULL;
++	char *proc_name = argv[0];
++
++	while((i = getopt_long(argc, argv, short_options, long_options, &opt_ind)) >= 0) {
++		switch(i) {
++		case 0:
++			break;
++		case 'c':
++			strncpy(cfg_dir, optarg, sizeof(cfg_dir)-2);
++			strcat(cfg_dir, "/");
++			break;
++		case 'l':
++			logfile_path = optarg;
++			break;
++		case 'h':
++			usage(proc_name);
++			break;
++		default:
++			usage(proc_name);
++			break;
++        }
++	}
++
++	snprintf(global_cfg_path, sizeof(global_cfg_path),  "%s%s", cfg_dir, global_cfg_name);
++	snprintf(local_cfg_path, sizeof(local_cfg_path),  "%s%s", cfg_dir, local_cfg_name);
++	snprintf(debug_cfg_path, sizeof(debug_cfg_path),  "%s%s", cfg_dir, debug_cfg_name);
++
+ 	/* threads */
+ 	pthread_t thrid_up;
+ 	pthread_t thrid_down;
+@@ -522,6 +570,22 @@
+ 	float rx_nocrc_ratio;
+ 	float up_ack_ratio;
+ 	float dw_ack_ratio;
++
++	/* redirect stdout, stderr to logfile if specified */
++	int logfile_fd;
++	FILE *logfile = NULL;
++	if (logfile_path) {
++		logfile = fopen(logfile_path, "w");
++		if (logfile) {
++			logfile_fd = fileno(logfile);
++			dup2(logfile_fd, STDOUT_FILENO);
++			dup2(logfile_fd, STDERR_FILENO);
++		}
++		else {
++			printf("Error opening log file %s\n", logfile_path);
++			exit(1);
++		}
++	}
+ 	
+ 	/* display version informations */
+ 	MSG("*** Basic Packet Forwarder for Lora Gateway ***\nVersion: " VERSION_STRING "\n");
+diff --git a/gps_pkt_fwd/src/gps_pkt_fwd.c b/gps_pkt_fwd/src/gps_pkt_fwd.c
+index 79f7584..3f2f91c 100644
+--- a/gps_pkt_fwd/src/gps_pkt_fwd.c
++++ b/gps_pkt_fwd/src/gps_pkt_fwd.c
+@@ -44,6 +44,8 @@ Maintainer: Sylvain Miermont
+ #include <netdb.h>		/* gai_strerror */
+ 
+ #include <pthread.h>
++#include <getopt.h>
++#include <linux/limits.h>
+ 
+ #include "parson.h"
+ #include "base64.h"
+@@ -531,19 +533,65 @@ static double difftimespec(struct timespec end, struct timespec beginning) {
+ 	return x;
+ }
+ 
++void usage(char *proc_name) {
++	fprintf(stderr, "Usage: %s [-c config_dir] [-l logfile]\n", proc_name);
++	exit(1);
++}
++
++
++static char *short_options = "c:l:h";
++static struct option long_options[] = {
++    {"config-dir", 1, 0, 'c'},
++    {"logfile", 1, 0, 'l'},
++    {"help", 0, 0, 'h'},
++    {0, 0, 0, 0},
++};
++
+ /* -------------------------------------------------------------------------- */
+ /* --- MAIN FUNCTION -------------------------------------------------------- */
+ 
+-int main(void)
++int main(int argc, char *argv[])
+ {
+ 	struct sigaction sigact; /* SIGQUIT&SIGINT&SIGTERM signal handling */
+ 	int i; /* loop variable and temporary variable for return value */
+ 	
+ 	/* configuration file related */
+-	char *global_cfg_path= "global_conf.json"; /* contain global (typ. network-wide) configuration */
+-	char *local_cfg_path = "local_conf.json"; /* contain node specific configuration, overwrite global parameters for parameters that are defined in both */
+-	char *debug_cfg_path = "debug_conf.json"; /* if present, all other configuration files are ignored */
+-	
++	char *global_cfg_name = "global_conf.json"; /* contain global (typ. network-wide) configuration */
++	char *local_cfg_name = "local_conf.json"; /* contain node specific configuration, overwrite global parameters for parameters that are defined in both */
++	char *debug_cfg_name = "debug_conf.json"; /* if present, all other configuration files are ignored */
++
++	int opt_ind = 0;
++	char cfg_dir[PATH_MAX] = {0};
++	char global_cfg_path[PATH_MAX] = {0};
++	char local_cfg_path[PATH_MAX] = {0};
++	char debug_cfg_path[PATH_MAX] = {0};
++	char *logfile_path = NULL;
++	char *proc_name = argv[0];
++
++	while((i = getopt_long(argc, argv, short_options, long_options, &opt_ind)) >= 0) {
++		switch(i) {
++		case 0:
++			break;
++		case 'c':
++			strncpy(cfg_dir, optarg, sizeof(cfg_dir)-2);
++			strcat(cfg_dir, "/");
++			break;
++		case 'l':
++			logfile_path = optarg;
++			break;
++		case 'h':
++			usage(proc_name);
++			break;
++		default:
++			usage(proc_name);
++			break;
++        }
++	}
++
++	snprintf(global_cfg_path, sizeof(global_cfg_path),  "%s%s", cfg_dir, global_cfg_name);
++	snprintf(local_cfg_path, sizeof(local_cfg_path),  "%s%s", cfg_dir, local_cfg_name);
++	snprintf(debug_cfg_path, sizeof(debug_cfg_path),  "%s%s", cfg_dir, debug_cfg_name);
++
+ 	/* threads */
+ 	pthread_t thrid_up;
+ 	pthread_t thrid_down;
+@@ -589,6 +637,22 @@ int main(void)
+ 	float up_ack_ratio;
+ 	float dw_ack_ratio;
+ 	
++	/* redirect stdout, stderr to logfile if specified */
++	int logfile_fd;
++	FILE *logfile = NULL;
++	if (logfile_path) {
++		logfile = fopen(logfile_path, "w");
++		if (logfile) {
++			logfile_fd = fileno(logfile);
++			dup2(logfile_fd, STDOUT_FILENO);
++			dup2(logfile_fd, STDERR_FILENO);
++		}
++		else {
++			printf("Error opening log file %s\n", logfile_path);
++			exit(1);
++		}
++	}
++		
+ 	/* display version informations */
+ 	MSG("*** GPS Packet Forwarder for Lora Gateway ***\nVersion: " VERSION_STRING "\n");
+ 	MSG("*** Lora concentrator HAL library version info ***\n%s\n***\n", lgw_version_info());
+Index: git/beacon_pkt_fwd/src/beacon_pkt_fwd.c
+===================================================================
+--- git.orig/beacon_pkt_fwd/src/beacon_pkt_fwd.c	2015-04-01 15:14:12.156933956 -0500
++++ git/beacon_pkt_fwd/src/beacon_pkt_fwd.c	2015-04-01 15:14:12.284931938 -0500
+@@ -45,6 +45,8 @@
+ #include <netdb.h>		/* gai_strerror */
+ 
+ #include <pthread.h>
++#include <getopt.h>
++#include <linux/limits.h>
+ 
+ #include "parson.h"
+ #include "base64.h"
+@@ -618,19 +620,65 @@
+ 	return x;
+ }
+ 
++void usage(char *proc_name) {
++	fprintf(stderr, "Usage: %s [-c config_dir] [-l logfile]\n", proc_name);
++	exit(1);
++}
++
++
++static char *short_options = "c:h";
++static struct option long_options[] = {
++    {"config-dir", 1, 0, 'c'},
++    {"logfile", 1, 0, 'l'},
++    {"help", 0, 0, 'h'},
++    {0, 0, 0, 0},
++};
++
+ /* -------------------------------------------------------------------------- */
+ /* --- MAIN FUNCTION -------------------------------------------------------- */
+ 
+-int main(void)
++int main(int argc, char *argv[])
+ {
+ 	struct sigaction sigact; /* SIGQUIT&SIGINT&SIGTERM signal handling */
+ 	int i; /* loop variable and temporary variable for return value */
+ 	
+ 	/* configuration file related */
+-	char *global_cfg_path= "global_conf.json"; /* contain global (typ. network-wide) configuration */
+-	char *local_cfg_path = "local_conf.json"; /* contain node specific configuration, overwrite global parameters for parameters that are defined in both */
+-	char *debug_cfg_path = "debug_conf.json"; /* if present, all other configuration files are ignored */
+-	
++	char *global_cfg_name = "global_conf.json"; /* contain global (typ. network-wide) configuration */
++	char *local_cfg_name = "local_conf.json"; /* contain node specific configuration, overwrite global parameters for parameters that are defined in both */
++	char *debug_cfg_name = "debug_conf.json"; /* if present, all other configuration files are ignored */
++
++	int opt_ind = 0;
++	char cfg_dir[PATH_MAX] = {0};
++	char global_cfg_path[PATH_MAX] = {0};
++	char local_cfg_path[PATH_MAX] = {0};
++	char debug_cfg_path[PATH_MAX] = {0};
++	char *logfile_path = NULL;
++	char *proc_name = argv[0];
++
++	while((i = getopt_long(argc, argv, short_options, long_options, &opt_ind)) >= 0) {
++		switch(i) {
++		case 0:
++			break;
++		case 'c':
++			strncpy(cfg_dir, optarg, sizeof(cfg_dir)-2);
++			strcat(cfg_dir, "/");
++			break;
++		case 'l':
++			logfile_path = optarg;
++			break;
++		case 'h':
++			usage(proc_name);
++			break;
++		default:
++			usage(proc_name);
++			break;
++        }
++	}
++
++	snprintf(global_cfg_path, sizeof(global_cfg_path),  "%s%s", cfg_dir, global_cfg_name);
++	snprintf(local_cfg_path, sizeof(local_cfg_path),  "%s%s", cfg_dir, local_cfg_name);
++	snprintf(debug_cfg_path, sizeof(debug_cfg_path),  "%s%s", cfg_dir, debug_cfg_name);
++
+ 	/* threads */
+ 	pthread_t thrid_up;
+ 	pthread_t thrid_down;
+@@ -767,6 +715,22 @@
+ 	float rx_nocrc_ratio;
+ 	float up_ack_ratio;
+ 	float dw_ack_ratio;
++
++	/* redirect stdout, stderr to logfile if specified */
++	int logfile_fd;
++	FILE *logfile = NULL;
++	if (logfile_path) {
++		logfile = fopen(logfile_path, "w");
++		if (logfile) {
++			logfile_fd = fileno(logfile);
++			dup2(logfile_fd, STDOUT_FILENO);
++			dup2(logfile_fd, STDERR_FILENO);
++		}
++		else {
++			printf("Error opening log file %s\n", logfile_path);
++			exit(1);
++		}
++	}
+ 	
+ 	/* display version informations */
+ 	MSG("*** Beacon Packet Forwarder for Lora Gateway ***\nVersion: " VERSION_STRING "\n");

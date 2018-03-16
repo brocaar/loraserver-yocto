@@ -1,0 +1,109 @@
+Index: git/basic_pkt_fwd/src/basic_pkt_fwd.c
+===================================================================
+--- git.orig/basic_pkt_fwd/src/basic_pkt_fwd.c	2014-12-16 17:03:32.891297739 -0600
++++ git/basic_pkt_fwd/src/basic_pkt_fwd.c	2014-12-18 10:49:22.379916372 -0600
+@@ -928,7 +928,8 @@
+ 					MSG("ERROR: [up] received packet with unknown status\n");
+ 					memcpy((void *)(buff_up + buff_index), (void *)",\"stat\":?", 9);
+ 					buff_index += 9;
+-					exit(EXIT_FAILURE);
++					continue; // skip packet
++					//exit(EXIT_FAILURE);
+ 			}
+ 			
+ 			/* Packet modulation, 13-14 useful chars */
+@@ -966,7 +967,8 @@
+ 						MSG("ERROR: [up] lora packet with unknown datarate\n");
+ 						memcpy((void *)(buff_up + buff_index), (void *)",\"datr\":\"SF?", 12);
+ 						buff_index += 12;
+-						exit(EXIT_FAILURE);
++						continue; // skip packet
++						//exit(EXIT_FAILURE);
+ 				}
+ 				switch (p->bandwidth) {
+ 					case BW_125KHZ:
+@@ -985,7 +987,8 @@
+ 						MSG("ERROR: [up] lora packet with unknown bandwidth\n");
+ 						memcpy((void *)(buff_up + buff_index), (void *)"BW?\"", 4);
+ 						buff_index += 4;
+-						exit(EXIT_FAILURE);
++						continue; // skip packet
++						//exit(EXIT_FAILURE);
+ 				}
+ 				
+ 				/* Packet ECC coding rate, 11-13 useful chars */
+@@ -1014,7 +1017,8 @@
+ 						MSG("ERROR: [up] lora packet with unknown coderate\n");
+ 						memcpy((void *)(buff_up + buff_index), (void *)",\"codr\":\"?\"", 11);
+ 						buff_index += 11;
+-						exit(EXIT_FAILURE);
++						continue; // skip packet
++						//exit(EXIT_FAILURE);
+ 				}
+ 				
+ 				/* Lora SNR, 11-13 useful chars */
+@@ -1039,7 +1043,8 @@
+ 				}
+ 			} else {
+ 				MSG("ERROR: [up] received packet with unknown modulation\n");
+-				exit(EXIT_FAILURE);
++				continue; // skip packet
++				//exit(EXIT_FAILURE);
+ 			}
+ 			
+ 			/* Packet RSSI, payload size, 18-23 useful chars */
+ 			
+diff --git a/gps_pkt_fwd/src/gps_pkt_fwd.c b/gps_pkt_fwd/src/gps_pkt_fwd.c
+index 79f7584..933de29 100644
+--- a/gps_pkt_fwd/src/gps_pkt_fwd.c
++++ b/gps_pkt_fwd/src/gps_pkt_fwd.c
+@@ -1107,7 +1107,8 @@ void thread_up(void) {
+ 					MSG("ERROR: [up] received packet with unknown status\n");
+ 					memcpy((void *)(buff_up + buff_index), (void *)",\"stat\":?", 9);
+ 					buff_index += 9;
+-					exit(EXIT_FAILURE);
++					continue; // skip packet
++					//exit(EXIT_FAILURE);
+ 			}
+ 			
+ 			/* Packet modulation, 13-14 useful chars */
+@@ -1145,7 +1146,8 @@ void thread_up(void) {
+ 						MSG("ERROR: [up] lora packet with unknown datarate\n");
+ 						memcpy((void *)(buff_up + buff_index), (void *)",\"datr\":\"SF?", 12);
+ 						buff_index += 12;
+-						exit(EXIT_FAILURE);
++						continue; // skip packet
++						//exit(EXIT_FAILURE);
+ 				}
+ 				switch (p->bandwidth) {
+ 					case BW_125KHZ:
+@@ -1164,7 +1166,8 @@ void thread_up(void) {
+ 						MSG("ERROR: [up] lora packet with unknown bandwidth\n");
+ 						memcpy((void *)(buff_up + buff_index), (void *)"BW?\"", 4);
+ 						buff_index += 4;
+-						exit(EXIT_FAILURE);
++                        continue; // skip packet
++						//exit(EXIT_FAILURE);
+ 				}
+ 				
+ 				/* Packet ECC coding rate, 11-13 useful chars */
+@@ -1193,7 +1196,8 @@ void thread_up(void) {
+ 						MSG("ERROR: [up] lora packet with unknown coderate\n");
+ 						memcpy((void *)(buff_up + buff_index), (void *)",\"codr\":\"?\"", 11);
+ 						buff_index += 11;
+-						exit(EXIT_FAILURE);
++						continue; // skip packet
++						//exit(EXIT_FAILURE);
+ 				}
+ 				
+ 				/* Lora SNR, 11-13 useful chars */
+@@ -1218,7 +1222,8 @@ void thread_up(void) {
+ 				}
+ 			} else {
+ 				MSG("ERROR: [up] received packet with unknown modulation\n");
+-				exit(EXIT_FAILURE);
++				continue; // skip packet				
++				//exit(EXIT_FAILURE);
+ 			}
+ 			
+ 			/* Packet RSSI, payload size, 18-23 useful chars */

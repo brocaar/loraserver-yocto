@@ -1,0 +1,90 @@
+#!/bin/bash
+
+NAME="lora-packet-forwarder-usb"
+
+opt_conf_dir=/opt/lora-packet-forwarder-usb/config
+conf_dir=/var/config/lora-packet-forwarder-usb
+conf_file=$conf_dir/global_conf.json
+
+pkt_fwd=/opt/lora-packet-forwarder-usb/gps_pkt_fwd
+pkt_fwd_pidfile=/var/run/lora-packet-forwarder-usb.pid
+lora_mtac_id="MTAC-LORA"
+
+read_lora_hw_info() {
+    lora_id=$(mts-io-sysfs show lora/product-id 2> /dev/null)
+    lora_eui=$(mts-io-sysfs show lora/eui 2> /dev/null)
+    # remove all colons
+    lora_eui_raw=${lora_eui//:/}
+    lora_hw=$(mts-io-sysfs show lora/hw-version 2> /dev/null)
+}
+
+hardware_found() {
+    if [[ "$lora_id" =~ "$lora_mtac_id" ]]; then
+        return 0
+    fi
+
+    return 1
+}
+
+copy_config() {
+    cp $opt_conf_dir/global_conf.json.$lora_id $conf_file
+    sed -i "s~\"gateway_ID\": \".*\"~\"gateway_ID\": \"$lora_eui_raw\"~" $conf_file
+}
+
+do_start() {
+    read_lora_hw_info
+
+    if hardware_found; then
+        echo "Found $lora_id with $lora_hw hardware"
+    else
+        echo "$0: LORA card not detected"
+        exit 1
+    fi
+
+    if ! [ -f $conf_file ]; then
+        mkdir -p $conf_dir
+        copy_config
+    fi
+
+    echo -n "Starting $NAME: "
+
+    /usr/sbin/start-stop-daemon \
+        --chdir $conf_dir \
+        --background \
+        --start \
+        --make-pidfile \
+        --pidfile $pkt_fwd_pidfile \
+        --startas /bin/bash -- -c "exec $pkt_fwd"
+
+    renice -n -20 -p $(pgrep $(basename $pkt_fwd))
+
+    echo "OK"
+}
+
+
+do_stop() {
+    echo -n "Stopping $NAME: "
+    start-stop-daemon --stop --quiet --oknodo --pidfile $pkt_fwd_pidfile --retry 5
+    rm -f $pkt_fwd_pidfile
+    echo "OK"
+}
+
+case "$1" in
+    "start")
+    do_start
+        ;;
+    "stop")
+    do_stop
+        ;;
+    "restart")
+        ## Stop the service and regardless of whether it was
+        ## running or not, start it again.
+        do_stop
+        do_start
+        ;;
+    *)
+        ## If no parameters are given, print which are avaiable.
+        echo "Usage: $0 {start|stop|restart}"
+        exit 1
+    ;;
+esac

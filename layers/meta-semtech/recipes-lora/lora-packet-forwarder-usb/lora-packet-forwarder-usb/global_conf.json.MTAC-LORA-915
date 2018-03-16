@@ -1,0 +1,192 @@
+{
+	"SX1301_conf": {
+		"lorawan_public": true,
+		"antenna_gain": 0,
+		"clksrc": 0,
+		"radio_0": {
+			"enable": true,
+			"freq": 902600000,
+			"rssi_offset": -165,
+			"tx_enable": true,
+			"tx_freq_max": 902000000,
+			"tx_freq_min": 928000000,
+			"type": "SX1257"
+		},
+		"radio_1": {
+			"enable": true,
+			"freq": 903400000,
+			"rssi_offset": -165,
+			"tx_enable": false,
+			"type": "SX1257"
+		},
+		"chan_FSK": {
+			"enable": false,
+			"radio": 0
+		},
+		"chan_Lora_std": {
+			"bandwidth": 500000,
+			"enable": true,
+			"if": 400000,
+			"radio": 0,
+			"spread_factor": 8
+		},
+		"chan_multiSF_0": {
+			"enable": true,
+			"if": -300000,
+			"radio": 0
+		},
+		"chan_multiSF_1": {
+			"enable": true,
+			"if": -100000,
+			"radio": 0
+		},
+		"chan_multiSF_2": {
+			"enable": true,
+			"if": 100000,
+			"radio": 0
+		},
+		"chan_multiSF_3": {
+			"enable": true,
+			"if": 300000,
+			"radio": 0
+		},
+		"chan_multiSF_4": {
+			"enable": true,
+			"if": -300000,
+			"radio": 1
+		},
+		"chan_multiSF_5": {
+			"enable": true,
+			"if": -100000,
+			"radio": 1
+		},
+		"chan_multiSF_6": {
+			"enable": true,
+			"if": 100000,
+			"radio": 1
+		},
+		"chan_multiSF_7": {
+			"enable": true,
+			"if": 300000,
+			"radio": 1
+		},
+		"lbt_cfg": {
+			"enable": false,
+			"nb_channel": 1,
+			"rssi_target": 160,
+			"scan_time_us": 5000,
+			"start_freq": 869525000,
+			"tx_delay_1ch_us": 4000000,
+			"tx_delay_2ch_us": 4000000
+		},
+		"tx_lut_0": {
+			"dig_gain": 0,
+			"mix_gain": 11,
+			"pa_gain": 0,
+			"rf_power": -6
+		},
+		"tx_lut_1": {
+			"dig_gain": 0,
+			"mix_gain": 13,
+			"pa_gain": 0,
+			"rf_power": -3
+		},
+		"tx_lut_2": {
+			"dig_gain": 0,
+			"mix_gain": 9,
+			"pa_gain": 1,
+			"rf_power": 0
+		},
+		"tx_lut_3": {
+			"dig_gain": 0,
+			"mix_gain": 10,
+			"pa_gain": 1,
+			"rf_power": 3
+		},
+		"tx_lut_4": {
+			"dig_gain": 0,
+			"mix_gain": 12,
+			"pa_gain": 1,
+			"rf_power": 6
+		},
+		"tx_lut_5": {
+			"dig_gain": 0,
+			"mix_gain": 10,
+			"pa_gain": 2,
+			"rf_power": 10
+		},
+		"tx_lut_6": {
+			"dig_gain": 0,
+			"mix_gain": 11,
+			"pa_gain": 2,
+			"rf_power": 11
+		},
+		"tx_lut_7": {
+			"dig_gain": 0,
+			"mix_gain": 11,
+			"pa_gain": 2,
+			"rf_power": 12
+		},
+		"tx_lut_8": {
+			"dig_gain": 0,
+			"mix_gain": 12,
+			"pa_gain": 2,
+			"rf_power": 13
+		},
+		"tx_lut_9": {
+			"dig_gain": 0,
+			"mix_gain": 13,
+			"pa_gain": 2,
+			"rf_power": 14
+		},
+		"tx_lut_10": {
+			"dig_gain": 0,
+			"mix_gain": 15,
+			"pa_gain": 2,
+			"rf_power": 16
+		},
+		"tx_lut_11": {
+			"dig_gain": 0,
+			"mix_gain": 10,
+			"pa_gain": 3,
+			"rf_power": 20
+		},
+		"tx_lut_12": {
+			"dig_gain": 0,
+			"mix_gain": 12,
+			"pa_gain": 3,
+			"rf_power": 23
+		},
+		"tx_lut_13": {
+			"dig_gain": 0,
+			"mix_gain": 13,
+			"pa_gain": 3,
+			"rf_power": 25
+		},
+		"tx_lut_14": {
+			"dig_gain": 0,
+			"mix_gain": 15,
+			"pa_gain": 3,
+			"rf_power": 26
+		},
+		"tx_lut_15": {
+			"dig_gain": 0,
+			"mix_gain": 15,
+			"pa_gain": 3,
+			"rf_power": 27
+		}
+	},
+	"gateway_conf": {
+        "gateway_ID": "AA555A0000000000",
+		"server_address": "localhost",
+		"serv_port_down": 1700,
+		"serv_port_up": 1700,
+		"keepalive_interval": 10,
+		"stat_interval": 30,
+		"push_timeout_ms": 100,
+        "fake_gps": true,
+        "ref_latitude": 0,
+        "ref_longitude": 0,
+        "ref_altitude": 0
+	}
+}

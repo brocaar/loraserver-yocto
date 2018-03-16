@@ -1,0 +1,13 @@
+Index: git/libloragw/src/loragw_hal.c
+===================================================================
+--- git.orig/libloragw/src/loragw_hal.c	2014-12-16 16:07:20.812506157 -0600
++++ git/libloragw/src/loragw_hal.c	2014-12-16 16:18:34.427454833 -0600
+@@ -1626,6 +1626,8 @@
+ 			break;
+ 		}
+ 	}
++
++	DEBUG_PRINTF("DEBUG: Tx pow_index %d, rf_power %d\n", pow_index, tx_pow_table[pow_index].rf_power);
+ 	
+ 	/* loading TX imbalance correction */
+ 	target_mix_gain = tx_pow_table[pow_index].mix_gain;

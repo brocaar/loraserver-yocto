@@ -1,0 +1,99 @@
+
+diff --git a/basic_pkt_fwd/src/basic_pkt_fwd.c b/basic_pkt_fwd/src/basic_pkt_fwd.c
+index 2223b4a..2db6e26 100644
+--- a/basic_pkt_fwd/src/basic_pkt_fwd.c
++++ b/basic_pkt_fwd/src/basic_pkt_fwd.c
+@@ -103,7 +104,8 @@ static bool fwd_error_pkt = false; /* packets with PAYLOAD CRC ERROR are NOT for
+ static bool fwd_nocrc_pkt = false; /* packets with NO PAYLOAD CRC are NOT forwarded */
+ 
+ /* network configuration variables */
++static uint8_t synch_word = 0x12;
+ static uint64_t lgwm = 0; /* Lora gateway MAC address */
+ static char serv_addr[64] = STR(DEFAULT_SERVER); /* address of the server (host name or IPv4/IPv6) */
+ static char serv_port_up[8] = STR(DEFAULT_PORT_UP); /* server port for upstream traffic */
+ static char serv_port_down[8] = STR(DEFAULT_PORT_DW); /* server port for downstream traffic */
+@@ -281,6 +282,11 @@ static int parse_SX1301_configuration(const char * conf_file) {
+ 		MSG("INFO: %s does contain a JSON object named %s, parsing SX1301 parameters\n", conf_file, conf_obj_name);
+ 	}
+ 	
++	val = json_object_get_value(conf_obj, "lorawan_public"); /* fetch value (if possible) */
++	if (json_value_get_type(val) == JSONBoolean && (bool)json_value_get_boolean(val) == true) {
++	    synch_word = 0x34;
++	}
++	
+ 	/* set configuration for RF chains */
+ 	for (i = 0; i < LGW_RF_CHAIN_NB; ++i) {
+ 		memset(&rfconf, 0, sizeof rfconf); /* initialize configuration structure */
+@@ -404,7 +415,14 @@ static int parse_gateway_configuration(const char * conf_file) {
+ 		snprintf(serv_port_down, sizeof serv_port_down, "%u", (uint16_t)json_value_get_number(val));
+ 		MSG("INFO: downstream port is configured to \"%s\"\n", serv_port_down);
+ 	}
+-	
++
++	val = json_object_get_value(conf_obj, "synch_word");
++	if (val != NULL) {
++		synch_word = (uint8_t)json_value_get_number(val);
++		MSG("INFO: synch word is configured to %02x\n", synch_word);
++	}
++
++
+ 	/* get keep-alive interval (in seconds) for downstream (optional) */
+ 	val = json_object_get_value(conf_obj, "keepalive_interval");
+ 	if (val != NULL) {
+@@ -637,7 +721,9 @@ int main(void)
+ 		MSG("ERROR: [main] failed to start the concentrator\n");
+ 		exit(EXIT_FAILURE);
+ 	}
+-	
++
++    lgw_conf_lora_synch_word(synch_word);
++
+ 	/* spawn threads to manage upstream and downstream */
+ 	i = pthread_create( &thrid_up, NULL, (void * (*)(void *))thread_up, NULL);
+ 	if (i != 0) {
+diff --git a/gps_pkt_fwd/src/gps_pkt_fwd.c b/gps_pkt_fwd/src/gps_pkt_fwd.c
+index 79f7584..8addbc0 100644
+--- a/gps_pkt_fwd/src/gps_pkt_fwd.c
++++ b/gps_pkt_fwd/src/gps_pkt_fwd.c
+@@ -108,6 +108,7 @@ static bool fwd_error_pkt = false; /* packets with PAYLOAD CRC ERROR are NOT for
+ static bool fwd_nocrc_pkt = false; /* packets with NO PAYLOAD CRC are NOT forwarded */
+ 
+ /* network configuration variables */
++static uint8_t synch_word = 0x12;
+ static uint64_t lgwm = 0; /* Lora gateway MAC address */
+ static char serv_addr[64] = STR(DEFAULT_SERVER); /* address of the server (host name or IPv4/IPv6) */
+ static char serv_port_up[8] = STR(DEFAULT_PORT_UP); /* server port for upstream traffic */
+@@ -237,6 +238,11 @@ static int parse_SX1301_configuration(const char * conf_file) {
+ 		MSG("INFO: %s does contain a JSON object named %s, parsing SX1301 parameters\n", conf_file, conf_obj_name);
+ 	}
+ 	
++	val = json_object_get_value(conf_obj, "lorawan_public"); /* fetch value (if possible) */
++	if (json_value_get_type(val) == JSONBoolean && (bool)json_value_get_boolean(val) == true) {
++	    synch_word = 0x34;
++	}
++	
+ 	/* set configuration for RF chains */
+ 	for (i = 0; i < LGW_RF_CHAIN_NB; ++i) {
+ 		memset(&rfconf, 0, sizeof rfconf); /* initialize configuration structure */
+@@ -437,6 +443,12 @@ static int parse_gateway_configuration(const char * conf_file) {
+ 		MSG("INFO: downstream port is configured to \"%s\"\n", serv_port_down);
+ 	}
+ 	
++	val = json_object_get_value(conf_obj, "synch_word");
++	if (val != NULL) {
++		synch_word = (uint8_t)json_value_get_number(val);
++		MSG("INFO: synch word is configured to %02x\n", synch_word);
++	}
++	
+ 	/* get keep-alive interval (in seconds) for downstream (optional) */
+ 	val = json_object_get_value(conf_obj, "keepalive_interval");
+ 	if (val != NULL) {
+@@ -727,6 +739,8 @@ int main(void)
+ 		exit(EXIT_FAILURE);
+ 	}
+ 	
++	lgw_conf_lora_synch_word(synch_word);
++	
+ 	/* spawn threads to manage upstream and downstream */
+ 	i = pthread_create( &thrid_up, NULL, (void * (*)(void *))thread_up, NULL);
+ 	if (i != 0) {

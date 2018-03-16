@@ -1,0 +1,45 @@
+From 03c697f2bcf538407ca6a0821dbbb65ab7679aff Mon Sep 17 00:00:00 2001
+From: Jason Reiss <jreiss@multitech.com>
+Date: Thu, 16 Jul 2015 13:31:20 -0500
+Subject: [PATCH] feature: add option to send packets with no header
+
+---
+ basic_pkt_fwd/src/basic_pkt_fwd.c |    7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/basic_pkt_fwd/src/basic_pkt_fwd.c b/basic_pkt_fwd/src/basic_pkt_fwd.c
+index e20dfc1..2223b4a 100644
+--- a/basic_pkt_fwd/src/basic_pkt_fwd.c
++++ b/basic_pkt_fwd/src/basic_pkt_fwd.c
+@@ -1276,6 +1276,13 @@ void thread_down(void) {
+ 			if (val != NULL) {
+ 				txpkt.no_crc = (bool)json_value_get_boolean(val);
+ 			}
++
++            /* Parse "No Header" flag (optional field) */
++            val = json_object_get_value(txpk_obj,"nhdr");
++            if (val != NULL) {
++               txpkt.no_header = (bool)json_value_get_boolean(val);
++            }
++
+ 			
+ 			/* parse target frequency (mandatory) */
+ 			val = json_object_get_value(txpk_obj,"freq");
+ 			
+diff --git a/gps_pkt_fwd/src/gps_pkt_fwd.c b/gps_pkt_fwd/src/gps_pkt_fwd.c
+index 79f7584..d073540 100644
+--- a/gps_pkt_fwd/src/gps_pkt_fwd.c
++++ b/gps_pkt_fwd/src/gps_pkt_fwd.c
+@@ -1534,6 +1534,12 @@ void thread_down(void) {
+ 				txpkt.no_crc = (bool)json_value_get_boolean(val);
+ 			}
+ 			
++			/* Parse "No Header" flag (optional field) */
++            val = json_object_get_value(txpk_obj,"nhdr");
++            if (val != NULL) {
++                txpkt.no_header = (bool)json_value_get_boolean(val);
++            }
++			
+ 			/* parse target frequency (mandatory) */
+ 			val = json_object_get_value(txpk_obj,"freq");
+ 			if (val == NULL) {
