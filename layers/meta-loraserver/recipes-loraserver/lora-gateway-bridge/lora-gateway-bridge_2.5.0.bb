@@ -3,12 +3,12 @@ HOMEPAGE = "https://www.loraserver.io/"
 PRIORITY = "optional"
 LICENSE = "MIT"
 LIC_FILES_CHKSUM = "file://LICENSE;md5=5301050fd7cd58850085239d559297be"
-SRC_URI = "https://dl.loraserver.io/tar/lora-gateway-bridge_${PV}_linux_armv5.tar.gz \
+SRC_URI = "https://artifacts.loraserver.io/downloads/lora-gateway-bridge/lora-gateway-bridge_${PV}_linux_armv5.tar.gz \
            file://lora-gateway-bridge.toml \
            file://lora-gateway-bridge.init \
 "
-SRC_URI[md5sum] = "5bf046efaabc996853646a993570bbe7"
-SRC_URI[sha256sum] = "e66ecb80ed0677b275465a3e4c532443b49265aa845d7cedcabd05b4503a24cd"
+SRC_URI[md5sum] = "8138b6fe2891f239c8fee96da0d9a5bc"
+SRC_URI[sha256sum] = "d85b70e95be1170f765c3a9c4eeb6671afe5a17d27724125602082671ecc0601"
 PR = "r1"
 
 LORA_GATEWAY_BRIDGE_DIR = "/opt/lora-gateway-bridge"
