@@ -20,9 +20,44 @@ udp_bind = "0.0.0.0:1700"
 skip_crc_check = false
 
 
+  # # Managed packet-forwarder configuration.
+  # #
+  # # By configuring one or multiple managed packet-forwarder sections, the
+  # # LoRa Gateway Bridge updates the configuration when the backend receives
+  # # a configuration change, after which it will restart the packet-forwarder.
+  # [[packet_forwarder.configuration]]
+  # # Gateway MAC.
+  # #
+  # # The LoRa Gateway Bridge will only apply the configuration updates for this
+  # # gateway MAC.
+  # mac="0102030405060708"
+
+  # # Base configuration file.
+  # #
+  # # This file will be used as base-configuration and will not be overwritten on
+  # # a configuration update. This file needs to exist and contains the base
+  # # configuration and vendor specific
+  # base_file="/var/config/lora-packet-forwarder-ap1/global_conf.json"
+
+  # # Output configuration file.
+  # #
+  # # This will be the final configuration for the packet-forwarder, containing
+  # # a merged version of the base configuration + the requested configuration
+  # # update.
+  # # Warning: this file will be overwritten on a configuration update!
+  # output_file="/var/config/lora-packet-forwarder-ap1/local_conf.json"
+
+  # # Restart command.
+  # #
+  # # This command is issued by the LoRa Gateway Bridge on a configuration
+  # # change. Make sure the LoRa Gateway Bridge process has sufficient
+  # # permissions to execute this command.
+  # restart_command="/etc/init.d/lora-packet-forwarder-ap1 restart"
+
+
 # Configuration for the MQTT backend.
 [backend.mqtt]
-# MQTT topic templates for the different MQTT topic.
+# MQTT topic templates for the different MQTT topics.
 #
 # The meaning of these topics are documented at:
 # https://docs.loraserver.io/lora-gateway-bridge/use/data/
@@ -30,11 +65,12 @@ skip_crc_check = false
 # The default values match the default expected configuration of the
 # LoRa Server MQTT backend. Therefore only change these values when
 # absolutely needed.
-# Use "{{ .MAC }}" as an substitution for the LoRa gateway MAC.
+# Use "{{ .MAC }}" as an substitution for the LoRa gateway MAC. 
 uplink_topic_template="gateway/{{ .MAC }}/rx"
 downlink_topic_template="gateway/{{ .MAC }}/tx"
 stats_topic_template="gateway/{{ .MAC }}/stats"
 ack_topic_template="gateway/{{ .MAC }}/ack"
+config_topic_template="gateway/{{ .MAC }}/config"
 
 # MQTT server (e.g. scheme://host:port where scheme is tcp, ssl or ws)
 server="tcp://127.0.0.1:1883"
@@ -44,6 +80,30 @@ username=""
 
 # Connect with the given password (optional)
 password=""
+
+# Quality of service level
+#
+# 0: at most once
+# 1: at least once
+# 2: exactly once
+#
+# Note: an increase of this value will decrease the performance.
+# For more information: https://www.hivemq.com/blog/mqtt-essentials-part-6-mqtt-quality-of-service-levels
+qos=0
+
+# Clean session
+#
+# Set the "clean session" flag in the connect message when this client
+# connects to an MQTT broker. By setting this flag you are indicating
+# that no messages saved by the broker for this client should be delivered.
+clean_session=true
+
+# Client ID
+#
+# Set the client id to be used by this client when connecting to the MQTT
+# broker. A client id must be no longer than 23 characters. When left blank,
+# a random id will be generated. This requires clean_session=true.
+client_id=""
 
 # CA certificate file (optional)
 #
